@@ -1,0 +1,73 @@
+OWNER:  0xc450D0869FB72ba4FAcf296c5ce10a158c4048Cb
+NaiveOracle:  0x69B535aDAa42c76bD6a80BfFD3CBc58a269e5052
+ChainlinkETHPriceOracleProxy:  0x4db0DA6B791E3e915962194cBbf5B8013fd988C5
+TestUSDTAddress 0xD4f214E88dbc4A51c4DA7bA7CfF1EF9A261d522C
+ParaPlaceAddress:  0x2C6dD3de1D8aD9ff0eA91063C01E5FDd3fE860C1
+ParaPlace breedPara tx:  0xe85432875dba8d95566ce2cd93f809200666bb7fe7a5a958cd858892bd5b94c5
+ParaAddress:  0x932e244835e995255B603CDb5c0521c985f00bdb
+AdminAddress:  0xADC1560336753015AA428Bd6B3aE131114EA0F90
+PricingAddress:  0x8331831C837990CCb3519DBf1391d6E3306996A1
+LpTokenAddress 0xD0b73E5811CDD524bD6c8D49c1327fFd4592002A
+Admin Owner 0xc450D0869FB72ba4FAcf296c5ce10a158c4048Cb
+1 Result {
+  '0': BN {
+    negative: 0,
+    words: [ 0, <1 empty item> ],
+    length: 1,
+    red: null
+  },
+  '1': BN {
+    negative: 0,
+    words: [ 0, <1 empty item> ],
+    length: 1,
+    red: null
+  },
+  '2': BN {
+    negative: 0,
+    words: [ 0, <1 empty item> ],
+    length: 1,
+    red: null
+  },
+  '3': BN {
+    negative: 0,
+    words: [ 3145728, 52731398, 11080025, <1 empty item> ],
+    length: 3,
+    red: null
+  },
+  '4': BN {
+    negative: 0,
+    words: [ 0, <1 empty item> ],
+    length: 1,
+    red: null
+  },
+  SIDE: BN {
+    negative: 0,
+    words: [ 0, <1 empty item> ],
+    length: 1,
+    red: null
+  },
+  SIZE: BN {
+    negative: 0,
+    words: [ 0, <1 empty item> ],
+    length: 1,
+    red: null
+  },
+  ENTRY_VALUE: BN {
+    negative: 0,
+    words: [ 0, <1 empty item> ],
+    length: 1,
+    red: null
+  },
+  CASH_BALANCE: BN {
+    negative: 0,
+    words: [ 3145728, 52731398, 11080025, <1 empty item> ],
+    length: 3,
+    red: null
+  },
+  ENTRY_SLOSS: BN {
+    negative: 0,
+    words: [ 0, <1 empty item> ],
+    length: 1,
+    red: null
+  }
+}
