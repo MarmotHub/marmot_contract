@@ -83,7 +83,7 @@ contract Margin is Account {
         address trader
     ) public view returns (bool) {
         Types.MarginAccount memory account = _MARGIN_ACCOUNT_[trader];
-        return balanceMargin(account) > maintenanceMargin(account.SIZE,  ADMIN.getOraclePrice()).toint256(); // 此处应该用mark price
+        return balanceMargin(account) > maintenanceMargin(account.SIZE,  PRICING.getMarkPrice()).toint256(); // 此处应该用mark price
     }
 
 
@@ -92,7 +92,7 @@ contract Margin is Account {
         Types.MarginAccount memory account,
         uint256 openValue
     ) public view returns (bool) {
-        return availableMargin(account, ADMIN.getOraclePrice()) > DecimalMath.mul(openValue, ADMIN._INITIAL_MARGIN_RATE_()).toint256();
+        return availableMargin(account, PRICING.getMarkPrice()) > DecimalMath.mul(openValue, ADMIN._INITIAL_MARGIN_RATE_()).toint256();
     }
 
     // ============ Margin Account Ops ============

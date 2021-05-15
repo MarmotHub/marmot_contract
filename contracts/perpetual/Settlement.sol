@@ -69,7 +69,7 @@ contract Settlement is Margin {
      */
     function _collateralTraderTransferOut(address to, uint256 amount) internal {
         Types.MarginAccount memory traderAccount = _MARGIN_ACCOUNT_[msg.sender];
-        require(availableMargin(traderAccount, ADMIN.getOraclePrice())>=amount.toint256(), "INSUFFICIENT_FUND_TO_WITHDRAW");
+        require(availableMargin(traderAccount, PRICING.getMarkPrice())>=amount.toint256(), "INSUFFICIENT_FUND_TO_WITHDRAW");
 
         _MARGIN_ACCOUNT_[to].CASH_BALANCE = _MARGIN_ACCOUNT_[to]
             .CASH_BALANCE

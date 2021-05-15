@@ -21,7 +21,7 @@ import {Ownable} from "../lib/Ownable.sol";
 contract LpToken is Ownable {
     using SafeMath for uint256;
 
-    string internal _symbol = "PLP";
+    string internal _symbol = "MLP";
     string public originTokenName;
     uint8 internal _decimals = 18;
 
@@ -46,7 +46,7 @@ contract LpToken is Ownable {
     }
 
     function name() public view returns (string memory) {
-        string memory lpTokenSuffix = "_PARA_LP_TOKEN_";
+        string memory lpTokenSuffix = "_MARMOT_LP_TOKEN_";
         return string(abi.encodePacked(originTokenName, lpTokenSuffix));
     }
 

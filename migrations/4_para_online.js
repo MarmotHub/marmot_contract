@@ -1,5 +1,5 @@
 const fs = require("fs");
-const file = fs.createWriteStream("./deploy-logger.txt", { 'flags': 'w' });
+const file = fs.createWriteStream("./deploy-logger.txt", { 'flags': 'a' });
 let logger = new console.Console(file, file);
 
 const ethers = require("ethers")
@@ -138,7 +138,7 @@ module.exports = async (deployer, network, accounts) => {
             maintainer,
             TestBUSDAddress,
             BTCBUSDPriceOracleProxyAddress,
-            "MARMOT_BTC",
+            "BTC",
             lpFeeRate,
             mtFeeRate,
             k,
@@ -164,6 +164,8 @@ module.exports = async (deployer, network, accounts) => {
 
 
         // setting
+        await BTCBUSDAdminInstance.setTwapInterval(60);
+        await BTCBUSDAdminInstance.setPremiumLimit(decimalStr("0.1"));
         await BTCBUSDAdminInstance.setInitialMarginRate(decimalStr("0.05"));
         await BTCBUSDAdminInstance.setMaintenanceMarginRate(decimalStr("0.025"));
         await BTCBUSDAdminInstance.setLiquidationPenaltyRate(decimalStr("0.01"));
@@ -183,7 +185,7 @@ module.exports = async (deployer, network, accounts) => {
             maintainer,
             TestBUSDAddress,
             ETHBUSDPriceOracleProxyAddress,
-            "MARMOT_ETH",
+            "ETH",
             lpFeeRate,
             mtFeeRate,
             k,
@@ -207,6 +209,8 @@ module.exports = async (deployer, network, accounts) => {
         await ETHBUSDAdminInstance.enableDeposit();
         await ETHBUSDAdminInstance.enableTrading();
         // setting
+        await ETHBUSDAdminInstance.setTwapInterval(60);
+        await ETHBUSDAdminInstance.setPremiumLimit(decimalStr("0.1"));
         await ETHBUSDAdminInstance.setInitialMarginRate(decimalStr("0.05"));
         await ETHBUSDAdminInstance.setMaintenanceMarginRate(decimalStr("0.025"));
         await ETHBUSDAdminInstance.setLiquidationPenaltyRate(decimalStr("0.01"));

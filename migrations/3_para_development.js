@@ -62,6 +62,8 @@ module.exports = async (deployer, network, accounts) => {
         await deployer.deploy(NaiveOracle);
         NaivePriceOracleProxyAddress = NaiveOracle.address
         logger.log("NaivePriceOracleProxyAddress: ", NaivePriceOracleProxyAddress);
+        const NaivePriceOracleProxyInstance = await NaiveOracle.at(NaivePriceOracleProxyAddress);
+        await NaivePriceOracleProxyInstance.setPrice(decimalStr("100"));
     }
 
 
@@ -112,7 +114,7 @@ module.exports = async (deployer, network, accounts) => {
             maintainer,
             TestBUSDAddress,
             NaivePriceOracleProxyAddress,
-            "MARMOT_NAIVE",
+            "NAIVE",
             lpFeeRate,
             mtFeeRate,
             k,
@@ -131,13 +133,16 @@ module.exports = async (deployer, network, accounts) => {
         logger.log("NaivePricingAddress: ", NaivePricingAddress);
 
         const NaiveLpTokenAddress = await NaiveParaInstance._COLLATERAL_POOL_TOKEN_();
-        logger.log('BTCBUSDLpTokenAddress', NaiveLpTokenAddress);
+        logger.log('NaiveLpTokenAddress', NaiveLpTokenAddress);
 
         await NaiveAdminInstance.enableDeposit();
         await NaiveAdminInstance.enableTrading();
 
 
+
         // setting
+        await NaiveAdminInstance.setTwapInterval(60);
+        await NaiveAdminInstance.setPremiumLimit(decimalStr("0.1"));
         await NaiveAdminInstance.setInitialMarginRate(decimalStr("0.05"));
         await NaiveAdminInstance.setMaintenanceMarginRate(decimalStr("0.025"));
         await NaiveAdminInstance.setLiquidationPenaltyRate(decimalStr("0.01"));

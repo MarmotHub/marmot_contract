@@ -68,6 +68,8 @@ contract Storage is InitializableOwnable, ReentrancyGuard {
     uint256 public _LIQUIDATION_PENALTY_POOL_RATE_;
     // interval to store mid-price and oracle price to save gas
     uint256 public _TWAP_INTERVAL_ = 60;
+    //
+    uint256 public _PREMIUM_LIMIT_;
 
 
     // ============ Modifiers ============

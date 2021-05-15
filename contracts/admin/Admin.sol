@@ -208,6 +208,11 @@ contract Admin is Storage {
     function setTwapInterval(uint256 newTwapInterval) external onlyOwner {
         _TWAP_INTERVAL_ = newTwapInterval;
     }
+
+    function setPremiumLimit(uint256 newPremiumLimit) external onlyOwner {
+        _PREMIUM_LIMIT_ = newPremiumLimit;
+    }
+
     // ============ Helper function ============
     function getOraclePrice() external view returns (uint256) {
         return IOracle(_ORACLE_).getPrice();

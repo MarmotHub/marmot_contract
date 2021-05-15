@@ -200,6 +200,17 @@ contract Pricing {
         return calcTwapPremium(15 minutes);
     }
 
+    function getMarkPrice() public view returns (uint256) {
+        uint256 indexPrice = ADMIN.getOraclePrice();
+        uint256 limit = DecimalMath.mul(indexPrice, ADMIN._PREMIUM_LIMIT_());
+        int256 premium = getTwapPremium();
+        uint256 markPrice = (indexPrice.toint256().add(premium)).touint256();
+        markPrice = markPrice.min(indexPrice.add(limit));
+        markPrice = markPrice.max(indexPrice.sub(limit));
+        return markPrice;
+    }
+
+
 
     function calcTwap(uint256 _interval)
     internal
@@ -409,7 +420,7 @@ contract Pricing {
             DecimalMath.mul(accountEntrySloss, DecimalMath.divFloor(amount, accountSize));
         }
         uint256 closeSloss = DecimalMath.mul(ACCOUNT.getSloss()[uint256(accountSide)], amount);
-        uint256 closeValue = DecimalMath.mul(amount, ADMIN.getOraclePrice());
+        uint256 closeValue = DecimalMath.mul(amount, getMarkPrice());
         return queryPNLwiValue(accountSide, entryValue, closeValue, entrySloss, closeSloss);
     }
 
@@ -685,7 +696,7 @@ contract Pricing {
     // calculate ENP
     function _poolNetPositionRatio() public view returns (uint256 ENP) {
         uint256 poolEquity = _calculatePoolEquity().max(0).touint256();
-        uint256 currentValue = DecimalMath.mul(ACCOUNT.getPoolMarginSize(), ADMIN.getOraclePrice());
+        uint256 currentValue = DecimalMath.mul(ACCOUNT.getPoolMarginSize(), getMarkPrice());
         if (currentValue == 0) {
             ENP = uint256(- 1);
         }
