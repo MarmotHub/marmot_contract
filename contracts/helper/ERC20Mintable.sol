@@ -21,7 +21,7 @@ contract ERC20Mintable is Context, Ownable{
 
     mapping (address => mapping (address => uint256)) private _allowances;
     // can only mint once per address
-    mapping (address => bool) private _claimed;
+    mapping (address => bool) public claimed;
 
     uint256 private _totalSupply;
 
@@ -232,9 +232,9 @@ contract ERC20Mintable is Context, Ownable{
     }
 
     function claim(address account) external {
-        require(!_claimed[account], "ERC20Mintable: already mint to this address");
-        _mint(account, 10000*10**18);
-        _claimed[account] = true;
+        require(!claimed[account], "ERC20Mintable: already mint to this address");
+        _mint(account, 50000*10**18);
+        claimed[account] = true;
     }
 
     /**

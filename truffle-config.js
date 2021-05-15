@@ -47,7 +47,7 @@ module.exports = {
     // options below to some value.
     //
     ropsten: {
-      provider: () => new HDWalletProvider(process.env.MNENOMIC, "https://ropsten.infura.io/v3/" + process.env.INFURA_API_KEY),
+      provider: () => new HDWalletProvider(mnemonic, "https://ropsten.infura.io/v3/" + process.env.INFURA_API_KEY),
       network_id: 3,
       gas: 8000000,
       gasPrice: 10000000000
@@ -59,7 +59,7 @@ module.exports = {
       gasPrice: 10000000000
     },
     rinkeby: {
-      provider: () => new HDWalletProvider(process.env.MNENOMIC, "https://rinkeby.infura.io/v3/" + process.env.INFURA_API_KEY),
+      provider: () => new HDWalletProvider(mnemonic, "https://rinkeby.infura.io/v3/" + process.env.INFURA_API_KEY),
       network_id: 4,
       gas: 8000000,
       gasPrice: 10000000000
@@ -70,6 +70,21 @@ module.exports = {
      network_id: "*",       // Any network (default: none)
      gasPrice: 0x01
     },
+    bsc: {
+      provider: () => new HDWalletProvider(mnemonic, "https://bsc-dataseed.binance.org/"),
+      network_id: 56,
+      gas: 8000000,
+      gasPrice: 10000000000
+    },
+    bsctest: {
+      provider: () => new HDWalletProvider(mnemonic, "https://data-seed-prebsc-1-s1.binance.org:8545/"),
+      network_id: 97,
+      gas: 8000000,
+      gasPrice: 10000000000,
+      confirmations: 0,
+      timeoutBlocks: 200,
+      skipDryRun: false
+    }
     // Another network with more advanced options...
     // advanced: {
     // port: 8777,             // Custom port

@@ -8,6 +8,7 @@
 pragma solidity 0.6.9;
 pragma experimental ABIEncoderV2;
 
+import {SafeMath} from "../lib/SafeMath.sol";
 
 interface IChainlink {
     function latestAnswer() external view returns (uint256);
@@ -16,10 +17,14 @@ interface IChainlink {
 
 // for WETH-USDC(decimals=6) price convert
 
-contract ChainlinkETHPriceOracleProxy {
-    address public chainlink = 0x9326BFA02ADD2366b30bacB125260Af641031331;
+contract ChainlinkBTCPriceOracleProxyKovan {
+    using SafeMath for uint256;
+
+    address public chainlink = 0x6135b13325bfC4B00278B4abC5e20bbce2D6580e;
 
     function getPrice() external view returns (uint256) {
-        return IChainlink(chainlink).latestAnswer() * 100;
+        return IChainlink(chainlink).latestAnswer().mul(10**10);
     }
 }
+
+

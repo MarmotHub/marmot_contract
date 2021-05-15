@@ -17,10 +17,10 @@ interface IChainlink {
 
 // for WETH-USDC(decimals=6) price convert
 
-contract ChainlinkBTCPriceOracleProxyV2 {
+contract ChainlinkBTCPriceOracleProxyBSCtest {
     using SafeMath for uint256;
 
-    address public chainlink = 0x6135b13325bfC4B00278B4abC5e20bbce2D6580e;
+    address public chainlink = 0x5741306c21795FdCBb9b265Ea0255F499DFe515C;
 
     function getPrice() external view returns (uint256) {
         return IChainlink(chainlink).latestAnswer().mul(10**10);
