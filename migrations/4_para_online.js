@@ -29,6 +29,9 @@ const ChainlinkETHPriceOracleProxyKovan = artifacts.require("ChainlinkETHPriceOr
 const ChainlinkETHPriceOracleProxyBsctest = artifacts.require("ChainlinkETHPriceOracleProxyBSCtest");
 
 module.exports = async (deployer, network, accounts) => {
+    if (network == 'development') {
+        return
+    }
     const addresses = await web3.eth.getAccounts();
     const owner = accounts[0];
     logger.log("OWNER: ", owner);

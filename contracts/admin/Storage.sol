@@ -55,8 +55,6 @@ contract Storage is InitializableOwnable, ReentrancyGuard {
     // 管理费
     uint256 public _MT_FEE_RATE_;
     uint256 public _K_;
-
-
     // Variable for Margin Trading Governance
     uint256 public _INITIAL_MARGIN_RATE_;
     uint256 public _MAINTENANCE_MARGIN_RATE_;
@@ -68,6 +66,8 @@ contract Storage is InitializableOwnable, ReentrancyGuard {
     uint256 public _LIQUIDATION_PENALTY_RATE_;
     // reward to pool when trader got liquidated
     uint256 public _LIQUIDATION_PENALTY_POOL_RATE_;
+    // interval to store mid-price and oracle price to save gas
+    uint256 public _TWAP_INTERVAL_ = 60;
 
 
     // ============ Modifiers ============

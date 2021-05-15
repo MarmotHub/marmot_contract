@@ -33,13 +33,14 @@ contract Pricing {
 
     struct ReserveSnapshot {
         uint256 midPrice;
+        uint256 indexPrice;
         uint256 timestamp;
         uint256 blockNumber;
     }
 
     ReserveSnapshot[] public reserveSnapshots;
 
-    event ReserveSnapshotted(uint256 midPrice, uint256 timestamp, uint256 blockNumber);
+    event ReserveSnapshotted(uint256 midPrice, uint256 indexPrice, uint256 timestamp, uint256 blockNumber);
 
     function init(
         address accountAddress,
@@ -149,6 +150,16 @@ contract Pricing {
         return snapshot;
     }
 
+    function getPriceWithSpecificSnapshot(uint256 snapshotIndex)
+    internal
+    view
+    virtual
+    returns (uint256, uint256)
+    {
+        ReserveSnapshot memory snapshot = reserveSnapshots[snapshotIndex];
+        return (snapshot.midPrice, snapshot.indexPrice);
+    }
+
     function getReserveSnapshotLength() public view returns (uint256) {
         uint256 length = reserveSnapshots.length;
         return length;
@@ -158,27 +169,35 @@ contract Pricing {
         uint256 currentBlock = block.number;
         uint256 blockTimestamp = block.timestamp;
         uint256 midPrice = getMidPrice();
+        uint256 indexPrice = ADMIN.getOraclePrice();
         if (reserveSnapshots.length == 0) {
             reserveSnapshots.push(
-                ReserveSnapshot(midPrice, blockTimestamp, currentBlock)
+                ReserveSnapshot(midPrice, indexPrice, blockTimestamp, currentBlock)
             );
         }
         else {
             ReserveSnapshot storage latestSnapshot = reserveSnapshots[reserveSnapshots.length - 1];
             // update values in snapshot if in the same block
-            if (currentBlock == latestSnapshot.blockNumber) {
-                latestSnapshot.midPrice = midPrice;
-            } else {
-                reserveSnapshots.push(
-                    ReserveSnapshot(midPrice, blockTimestamp, currentBlock)
-                );
+            if (blockTimestamp.sub(latestSnapshot.timestamp) >= ADMIN._TWAP_INTERVAL_()) {
+                if (currentBlock == latestSnapshot.blockNumber) {
+                    latestSnapshot.midPrice = midPrice;
+                    latestSnapshot.indexPrice = indexPrice;
+                } else {
+                    reserveSnapshots.push(
+                        ReserveSnapshot(midPrice, indexPrice, blockTimestamp, currentBlock)
+                    );
+                }
+                emit ReserveSnapshotted(midPrice, indexPrice, blockTimestamp, currentBlock);
             }
         }
-        emit ReserveSnapshotted(midPrice, blockTimestamp, currentBlock);
     }
 
     function getTwapPrice() public view returns (uint256) {
         return calcTwap(15 minutes);
+    }
+
+    function getTwapPremium() public view returns (int256) {
+        return calcTwapPremium(15 minutes);
     }
 
 
@@ -192,7 +211,7 @@ contract Pricing {
         }
         uint256 blockTimestamp = block.timestamp;
         uint256 currentIndex = reserveSnapshots.length.sub(1);
-        uint256 currentPrice = getPriceWithSpecificSnapshot(currentIndex);
+        (uint256 currentPrice, ) = getPriceWithSpecificSnapshot(currentIndex);
 
         if (_interval == 0) {
             return currentPrice;
@@ -217,7 +236,7 @@ contract Pricing {
 
             currentIndex = currentIndex.sub(1);
             currentSnapshot = reserveSnapshots[currentIndex];
-            currentPrice = getPriceWithSpecificSnapshot(currentIndex);
+            (currentPrice,) = getPriceWithSpecificSnapshot(currentIndex);
 
             // check if current round timestamp is earlier than target timestamp
             if (currentSnapshot.timestamp <= baseTimestamp) {
@@ -238,15 +257,69 @@ contract Pricing {
     }
 
 
-    function getPriceWithSpecificSnapshot(uint256 snapshotIndex)
+    function calcTwapPremium(uint256 _interval)
     internal
     view
-    virtual
-    returns (uint256)
+    returns (int256)
     {
-        ReserveSnapshot memory snapshot = reserveSnapshots[snapshotIndex];
-        return snapshot.midPrice;
+        if (reserveSnapshots.length == 0) {
+            return 0;
+        }
+        uint256 blockTimestamp = block.timestamp;
+        uint256 currentIndex = reserveSnapshots.length.sub(1);
+        (uint256 currentPrice, uint256 currentIndexPrice) = getPriceWithSpecificSnapshot(currentIndex);
+
+        if (_interval == 0) {
+            return currentPrice.toint256().sub(currentIndexPrice.toint256());
+        }
+
+        uint256 baseTimestamp = blockTimestamp.sub(_interval);
+        ReserveSnapshot memory currentSnapshot = reserveSnapshots[currentIndex];
+        // return the latest snapshot price directly
+        // if only one snapshot or the timestamp of latest snapshot is earlier than asking for
+        if (reserveSnapshots.length == 1 || currentSnapshot.timestamp <= baseTimestamp) {
+            return currentPrice.toint256().sub(currentIndexPrice.toint256());
+        }
+
+        uint256 previousTimestamp = currentSnapshot.timestamp;
+        int256 period = blockTimestamp.sub(previousTimestamp).toint256();
+        int256 weightedPrice = (currentPrice.toint256().sub(currentIndexPrice.toint256())).mul(period);
+        while (true) {
+            // if snapshot history is too short
+            if (currentIndex == 0) {
+                return weightedPrice.div(period);
+            }
+
+            currentIndex = currentIndex.sub(1);
+            currentSnapshot = reserveSnapshots[currentIndex];
+            (currentPrice, currentIndexPrice) = getPriceWithSpecificSnapshot(currentIndex);
+
+            // check if current round timestamp is earlier than target timestamp
+            if (currentSnapshot.timestamp <= baseTimestamp) {
+                // weighted time period will be (target timestamp - previous timestamp). For example,
+                // now is 1000, _interval is 100, then target timestamp is 900. If timestamp of current round is 970,
+                // and timestamp of NEXT round is 880, then the weighted time period will be (970 - 900) = 70,
+                // instead of (970 - 880)
+                weightedPrice = weightedPrice.add(
+                    (currentPrice.toint256().sub(currentIndexPrice.toint256())).mul(
+                        (previousTimestamp.sub(baseTimestamp)).toint256()
+                    ));
+                break;
+            }
+
+            uint256 timeFraction = previousTimestamp.sub(currentSnapshot.timestamp);
+            weightedPrice = weightedPrice.add(
+                (currentPrice.toint256().sub(currentIndexPrice.toint256())).mul(
+                    timeFraction.toint256()
+                ));
+            period = period.add(timeFraction.toint256());
+            previousTimestamp = currentSnapshot.timestamp;
+        }
+        return weightedPrice.div(_interval.toint256());
     }
+
+
+
 
 
 
@@ -614,7 +687,7 @@ contract Pricing {
         uint256 poolEquity = _calculatePoolEquity().max(0).touint256();
         uint256 currentValue = DecimalMath.mul(ACCOUNT.getPoolMarginSize(), ADMIN.getOraclePrice());
         if (currentValue == 0) {
-            ENP = uint256(-1);
+            ENP = uint256(- 1);
         }
         else {
             ENP = DecimalMath.divCeil(poolEquity, currentValue);
@@ -623,12 +696,12 @@ contract Pricing {
 
     // POOL 资金仍超过新开仓最低线，可以开新仓
     function _canPoolOpen() public view {
-        require(_poolNetPositionRatio()>ADMIN._POOL_OPEN_TH_(), "POOL_CANT_OPEN");
+        require(_poolNetPositionRatio() > ADMIN._POOL_OPEN_TH_(), "POOL_CANT_OPEN");
     }
 
     //  POOL 资金量仍然超过强平线，可以keep
     function _canPoolKeep() public view {
-        require(_poolNetPositionRatio()>ADMIN._POOL_LIQUIDATE_TH_(), "POOL_CANT_KEEP");
+        require(_poolNetPositionRatio() > ADMIN._POOL_LIQUIDATE_TH_(), "POOL_CANT_KEEP");
     }
 
 }

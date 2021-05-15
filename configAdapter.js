@@ -1,5 +1,6 @@
 const { KOVAN_CONFIG } = require("./contracts/config/kovan-config");
 const { BSCTEST_CONFIG } = require("./contracts/config/bsctest-config");
+const { DEVELOPMENT_CONFIG } = require("./contracts/config/development-config");
 
 
 exports.GetConfig = function (network, accounts) {
@@ -11,6 +12,9 @@ exports.GetConfig = function (network, accounts) {
         case "bsctest":
             CONFIG = BSCTEST_CONFIG
             break;
+        case "development":
+            CONFIG = DEVELOPMENT_CONFIG
+            break
     }
     return CONFIG
 }

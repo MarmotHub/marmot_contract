@@ -99,6 +99,7 @@ describe("Trader", () => {
   describe("Trader", () => {
     it("trading check", async () => {
         // console.log(await ctx.Para.methods._queryBuyBaseToken(decimalStr("1")).call());
+        await ctx.EVM.fastMove(100)
         let [baseTarget, baseBalance, quoteTarget, quoteBalance,] = await ctx.Pricing.methods.getExpectedTarget().call();
         console.log('1. Balanced', baseTarget / 10 ** 18, baseBalance / 10 ** 18, quoteTarget / 10 ** 18, quoteBalance / 10 ** 18);
         console.log('2 pool margin account', await ctx.Para.methods._MARGIN_ACCOUNT_(poolAccount).call());
