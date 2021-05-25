@@ -77,7 +77,7 @@ module.exports = {
       gasPrice: 10000000000
     },
     bsctest: {
-      provider: () => new HDWalletProvider(mnemonic, "https://data-seed-prebsc-1-s1.binance.org:8545/"),
+      provider: () => new HDWalletProvider(mnemonic, "https://data-seed-prebsc-2-s1.binance.org:8545/"),
       network_id: 97,
       gas: 8000000,
       gasPrice: 10000000000,

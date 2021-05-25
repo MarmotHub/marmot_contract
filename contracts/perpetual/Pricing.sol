@@ -684,7 +684,7 @@ contract Pricing {
         else {
             equityBalance = ACCOUNT.getPoolMarginCashBalance().add(
                 queryPNLMarkPrice(
-                    Types.oppositeSide(ACCOUNT.getPoolMarginSide()),
+                    ACCOUNT.getPoolMarginSide(),
                     ACCOUNT.getPoolMarginSize(),
                     ACCOUNT.getPoolMarginEntryValue(),
                     ACCOUNT.getPoolMarginSize(),
@@ -712,7 +712,7 @@ contract Pricing {
 
     //  POOL 资金量仍然超过强平线，可以keep
     function _canPoolKeep() public view {
-        require(_poolNetPositionRatio() > ADMIN._POOL_LIQUIDATE_TH_(), "POOL_CANT_KEEP");
+        require(_poolNetPositionRatio() > ADMIN._POOL_LIQUIDATE_TH_(), "POOtL_CANT_KEEP");
     }
 
 }

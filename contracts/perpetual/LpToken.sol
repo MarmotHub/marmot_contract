@@ -46,7 +46,7 @@ contract LpToken is Ownable {
     }
 
     function name() public view returns (string memory) {
-        string memory lpTokenSuffix = "_MARMOT_LP_TOKEN_";
+        string memory lpTokenSuffix = "_MARMOT_LP_TOKEN";
         return string(abi.encodePacked(originTokenName, lpTokenSuffix));
     }
 

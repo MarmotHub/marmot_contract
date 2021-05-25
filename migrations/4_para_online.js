@@ -41,7 +41,7 @@ module.exports = async (deployer, network, accounts) => {
 
     const lpFeeRate = decimalStr("0.0005");
     const mtFeeRate = decimalStr("0.00");
-    const k = decimalStr("0.1");
+    const k = decimalStr("0.05");
     const gasPriceLimit = gweiStr("100");
 
     let CONFIG = GetConfig(network, accounts)
